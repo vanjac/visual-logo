@@ -15,6 +15,10 @@ function runCommand(tokens) {
     if(tokens[0] == "end") {
         return "Unmatched end";
     }
+    if(tokens.length == 1 && tokens[0].charAt(0) == '"') {
+        // comment
+        return;
+    }
     if(tokens[0] == "move") {
         if(tokens.length == 1)
             return "Which direction to move, forward or backward?";
