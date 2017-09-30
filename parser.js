@@ -170,7 +170,8 @@ function blockSelect(text, cursorOffset) {
         text = " " + text;
     if(WHITESPACE.indexOf(box.value.charAt(selEnd)) == -1) {
         text += " ";
-        cursorOffset--;
+        if(cursorOffset < 0)
+            cursorOffset--;
     }
     box.value = box.value.substring(0, selStart) + text
         + box.value.substring(selEnd);
