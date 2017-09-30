@@ -133,3 +133,15 @@ function turtleTurn(degCW) {
 }
 
 updateSprite();
+
+document.getElementById("resetbutton").onclick = function() {
+    turtle = {
+        "x": WIDTH/2,
+        "y": HEIGHT/2,
+        "heading": -Math.PI/2, // up
+        "pen": false,
+        "color": "black"
+    }
+    ctx.clearRect(0, 0, WIDTH, HEIGHT);
+    updateSprite();
+}
