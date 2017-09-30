@@ -167,6 +167,10 @@ function blockSelect(text) {
     cursorChanged(true);
 }
 
+function errorMessage(line, error) {
+    return "Error on line " + line + ": " + error;
+}
+
 function run() {
     var script = box.value;
     errors = checkErrors(script);
@@ -180,16 +184,16 @@ function run() {
         var tokens = tokenize(l);
         if(tokens.length == 0)
             continue;
-        runCommand(tokens);
+        var error = runCommand(tokens);
+        if(error) {
+            alert(errorMessage(lineNum, error));
+            break;
+        }
     }
 }
 
 function checkErrors(script) {
     var errors = [];
-
-    function errorMessage(line, error) {
-        return "Error on line " + line + ": " + error;
-    }
 
     var lines = script.split("\n");
     for(var lineNum = 0; lineNum < lines.length; lineNum++) {
