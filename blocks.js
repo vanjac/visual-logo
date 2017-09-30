@@ -1,4 +1,8 @@
 
+function contains(list, item) {
+    return list.indexOf(item) != -1;
+}
+
 BLOCKS = [
     {
         "text": "move",
@@ -7,9 +11,17 @@ BLOCKS = [
         }
     },
     {
-        "text": "abcde",
+        "text": "forward ___",
         "rule": function(tokens) {
-            return true;
+            return contains(tokens, "move") &&
+                !(contains(tokens, "forward") || contains(tokens, "backward"));
+        }
+    },
+    {
+        "text": "backward ___",
+        "rule": function(tokens) {
+            return contains(tokens, "move") &&
+                !(contains(tokens, "forward") || contains(tokens, "backward"));
         }
     }
 
