@@ -1,0 +1,20 @@
+a {
+    color: inherit;
+}
+.block {
+    display: inline-block;
+    border: 1px solid black;
+    border-radius: 8px;
+    margin: 4pt;
+    padding: 4pt;
+
+    background: #FFBB44;
+}
+
+.block:hover {
+    background: #FFDD66;
+}
+
+.block:active {
+    background: #DD9922;
+}
