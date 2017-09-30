@@ -9,13 +9,7 @@ GENERIC_COMMAND_ERROR = "Can't interpret command";
 var ctx = document.getElementById("drawcanvas").getContext("2d");
 var spriteCtx = document.getElementById("spritecanvas").getContext("2d");
 
-var turtle = {
-    "x": WIDTH/2,
-    "y": HEIGHT/2,
-    "heading": -Math.PI/2, // up
-    "pen": false,
-    "color": "black"
-}
+var turtle;
 
 function runCommand(tokens) {
     if(tokens[0] == "end") {
@@ -132,9 +126,7 @@ function turtleTurn(degCW) {
     updateSprite();
 }
 
-updateSprite();
-
-document.getElementById("resetbutton").onclick = function() {
+function clear() {
     turtle = {
         "x": WIDTH/2,
         "y": HEIGHT/2,
@@ -145,3 +137,7 @@ document.getElementById("resetbutton").onclick = function() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     updateSprite();
 }
+
+document.getElementById("resetbutton").onclick = clear;
+
+clear();
