@@ -107,7 +107,7 @@ BLOCKS = [
         "rule": ruleColor
     },
     {
-        "text": "repeat ___ times:end",
+        "text": "repeat ___ times:end repeat",
         "rule": ruleFirstToken
     }
 ];
