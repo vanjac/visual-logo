@@ -6,7 +6,7 @@ var currentBlankSelectionStart = null;
 
 function cursorChanged() {
     var pos = getCaretPosition(box);
-    
+
     if(cursorOnCharacter(box.value, pos, ['_'])) {
         var blankStart = pos;
         while(blankStart > 0 && box.value.charAt(blankStart-1) == '_') {
@@ -179,7 +179,7 @@ function getCaretPosition(elem) {
 	range.moveStart ('character', -elem.value.length);
 	return range.text.length;
     }
-    
+
     return 0;
 }
 
@@ -192,7 +192,7 @@ function getSelectionStart(elem) {
 	range.moveStart ('character', -elem.value.length);
 	return range.text.length;
     }
-    
+
     return 0;
 }
 
@@ -205,7 +205,7 @@ function getSelectionEnd(elem) {
 	var start = getSelectionStart(elem);
 	return range.text.length + start;
     }
-    
+
     return 0;
 }
 
