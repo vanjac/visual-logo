@@ -4,9 +4,10 @@ var box = document.getElementById("scriptbox");
 
 var currentBlankSelectionStart = null;
 
-function cursorChanged() {
+function cursorChanged(justAddedBlock) {
     var pos = getCaretPosition(box);
 
+    var blocksAdded = false;
     if(cursorOnCharacter(box.value, pos, ['_'])) {
         var blankStart = pos;
         while(blankStart > 0 && box.value.charAt(blankStart-1) == '_') {
@@ -22,16 +23,25 @@ function cursorChanged() {
         }
         currentBlankSelectionStart = blankStart;
         setSelection(box, blankStart, blankEnd);
-        addBlocksAtCursor(pos);
+        blocksAdded = addBlocksAtCursor(pos);
     } else if(cursorOnCharacter(box.value, pos, WHITESPACE)) {
         currentBlankSelectionStart = null;
-        addBlocksAtCursor(pos);
+        blocksAdded = addBlocksAtCursor(pos);
     } else {
         currentBlankSelectionStart = null;
         setBlocks([]);
     }
+    var onNewLine = pos == box.value.length || box.value.charAt(pos) == '\n'
+    if(!blocksAdded && justAddedBlock && onNewLine) {
+        // start a new line
+        box.value = box.value.substring(0, pos) + '\n'
+            + box.value.substring(pos);
+        setCaretPosition(box, pos + 1);
+        cursorChanged(false);
+    }
 }
 
+// return if any blocks were added
 function addBlocksAtCursor(pos) {
     var lineBeforeCursor = box.value.substring(
         lineStart(box.value, pos), pos);
@@ -42,6 +52,7 @@ function addBlocksAtCursor(pos) {
             matchedBlocks.push(BLOCKS[i].text);
     }
     setBlocks(matchedBlocks);
+    return matchedBlocks.length != 0;
 }
 
 function cursorOnCharacter(value, cursor, charSet) {
@@ -130,7 +141,7 @@ function blockSelect(text) {
         + box.value.substring(selEnd);
     setCaretPosition(box, selStart + text.length);
     box.focus();
-    cursorChanged();
+    cursorChanged(true);
 }
 
 
