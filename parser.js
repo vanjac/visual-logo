@@ -185,15 +185,24 @@ function run() {
         return;
     }
     var lines = script.split("\n");
-    for(var lineNum = 0; lineNum < lines.length; lineNum++) {
-        var l = lines[lineNum];
-        var tokens = tokenize(l);
+    runLines(lines, 0, lines.length);
+}
+
+function runLines(lines, start, end) {
+    for(var lineNum = start; lineNum < end; lineNum++) {
+        var tokens = tokenize(lines[lineNum]);
         if(tokens.length == 0)
             continue;
-        var error = runCommand(tokens);
-        if(error) {
-            alert(errorMessage(lineNum, error));
-            break;
+        var result = runCommand(tokens);
+        if(result) {
+            if(!isNaN(result)) {
+                // repeat block
+                console.log("Repeat " + result);
+            } else {
+                // error
+                alert(errorMessage(lineNum, result));
+                break;
+            }
         }
     }
 }
