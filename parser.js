@@ -14,6 +14,12 @@ function cursorChanged(justAddedBlock) {
 
     var pos = getCaretPosition(box);
 
+    // make sure there's always a new line at the bottom
+    if(box.value.length > 0 && box.value.charAt(box.value.length - 1) != '\n') {
+        box.value += '\n';
+        setCaretPosition(box, pos);
+    }
+
     var blocksAdded = false;
     if(cursorOnCharacter(box.value, pos, ['_'])) {
         var blankStart = pos;
