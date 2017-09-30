@@ -174,7 +174,7 @@ function blockSelect(text) {
 }
 
 function errorMessage(line, error) {
-    return "Error on line " + line + ": " + error;
+    return "Error on line " + (line + 1) + ": " + error;
 }
 
 function run() {
