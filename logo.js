@@ -15,6 +15,10 @@ var turtle = {
     "color": "black"
 }
 
+function runCommand(tokens) {
+    console.log(tokens);
+}
+
 function updateSprite() {
     spriteCtx.clearRect(0, 0, WIDTH, HEIGHT);
     spriteCtx.strokeStyle = "blue";

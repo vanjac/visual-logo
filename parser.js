@@ -172,6 +172,15 @@ function run() {
     errors = checkErrors(script);
     if(errors.length != 0) {
         alert(errors.join('\n'));
+        return;
+    }
+    var lines = script.split("\n");
+    for(var lineNum = 0; lineNum < lines.length; lineNum++) {
+        var l = lines[lineNum];
+        var tokens = tokenize(l);
+        if(tokens.length == 0)
+            continue;
+        runCommand(tokens);
     }
 }
 
