@@ -1,6 +1,11 @@
 a {
     color: inherit;
 }
+
+td {
+    vertical-align: top;
+}
+
 .block {
     display: inline-block;
     border: 1px solid black;
