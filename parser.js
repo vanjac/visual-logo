@@ -252,6 +252,8 @@ function checkErrors(script) {
                 continue;
             if(t == ":")
                 continue;
+            if(t.charAt(0) == '#')
+                continue;
             if(t.charAt(0) == '"') {
                 if(t.length == 1 || t.charAt(t.length - 1) != '"') {
                     errors.push(errorMessage(lineNum, "Unmatched quote"));

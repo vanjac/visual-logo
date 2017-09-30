@@ -86,7 +86,10 @@ function penCommand(tokens) {
     else if(tokens[0] == "color") {
         if(tokens.length == 1)
             return GENERIC_COMMAND_ERROR;
-        turtle.color = tokens[1];
+        var color = tokens[1];
+        if(color.charAt(0) == '"')
+            color = color.substring(1, color.length-1);
+        turtle.color = color;
     } else
         return GENERIC_COMMAND_ERROR;
 }
