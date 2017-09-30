@@ -51,7 +51,7 @@ function cursorOnCharacter(value, cursor, charSet) {
 }
 
 function lineStart(value, cursor) {
-    var lastIndex = value.substring(0, cursor+1).lastIndexOf('\n');
+    var lastIndex = value.substring(0, cursor).lastIndexOf('\n');
     if(lastIndex == -1)
         lastIndex = 0;
     return lastIndex;
