@@ -54,7 +54,6 @@ function addBlocksAtCursor(pos) {
         lineStart(box.value, pos), pos);
     tokensBeforeCursor = tokenize(lineBeforeCursor);
     // return if inside a string...
-    console.log(tokensBeforeCursor);
     if(tokensBeforeCursor.length > 0) {
         var lastToken = tokensBeforeCursor[tokensBeforeCursor.length-1];
         if(lastToken.charAt(0) == '"') {
@@ -65,6 +64,9 @@ function addBlocksAtCursor(pos) {
                 setBlocks([]);
                 return;
             }
+        }
+        if(lastToken.charAt(0) == '_') {
+            tokensBeforeCursor.pop();
         }
     }
     var matchedBlocks = [];
@@ -123,7 +125,7 @@ function tokenize(line) {
                     tokens.push(currentToken);
                     currentToken = "";
                 }
-            } else if(c != "_"){
+            } else {
                 currentToken += c;
             }
         }
@@ -163,6 +165,48 @@ function blockSelect(text) {
     setCaretPosition(box, selStart + text.length);
     box.focus();
     cursorChanged(true);
+}
+
+function run() {
+    var script = box.value;
+    errors = checkErrors(script);
+    if(errors.length != 0) {
+        alert(errors.join('\n'));
+    }
+}
+
+function checkErrors(script) {
+    var errors = [];
+
+    function errorMessage(line, error) {
+        return "Error on line " + line + ": " + error;
+    }
+
+    var lines = script.split("\n");
+    for(var lineNum = 0; lineNum < lines.length; lineNum++) {
+        var l = lines[lineNum];
+        var lTokens = tokenize(l);
+        for(var tokenNum = 0; tokenNum < lTokens.length; tokenNum++) {
+            var t = lTokens[tokenNum];
+            if(!isNaN(t))
+                continue;
+            if(t.charAt(0) == '"') {
+                if(t.length == 1 || t.charAt(t.length - 1) != '"') {
+                    errors.push(errorMessage(lineNum, "Unmatched quote"));
+                }
+                continue;
+            }
+            if(t.charAt(0) == '_') {
+                errors.push(errorMessage(lineNum, "Unfilled blank"));
+                continue;
+            }
+            if(VOCAB.indexOf(t) == -1) {
+                errors.push(errorMessage(lineNum, "Unknown word " + t));
+            }
+        }
+    }
+
+    return errors;
 }
 
 
@@ -244,3 +288,4 @@ function getSelectionEnd(elem) {
 
 box.onkeyup = function(){cursorChanged(false);};
 box.onclick = function(){cursorChanged(false);};
+document.getElementById("runbutton").onclick = run;
