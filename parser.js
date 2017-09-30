@@ -120,12 +120,15 @@ function setBlocks(blocks) {
 function blockSelect(text) {
     var selStart = getSelectionStart(box);
     var selEnd = getSelectionEnd(box);
-    if(WHITESPACE.indexOf(box.value.charAt(selStart - 1)) == -1)
+    if(selStart != 0 && WHITESPACE.indexOf(box.value.charAt(selStart - 1)) == -1)
         text = " " + text;
     if(WHITESPACE.indexOf(box.value.charAt(selEnd)) == -1)
         text += " ";
     box.value = box.value.substring(0, selStart) + text
         + box.value.substring(selEnd);
+    setCaretPosition(box, selStart + text.length);
+    box.focus();
+    cursorChanged();
 }
 
 
