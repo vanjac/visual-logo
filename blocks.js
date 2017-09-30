@@ -17,6 +17,10 @@ function ruleTurnDirection(tokens) {
         !(contains(tokens, "left") || contains(tokens, "right"));
 }
 
+function rulePenCommand(tokens) {
+    return tokens.length == 1 && tokens[0] == "pen";
+}
+
 function ruleColor(tokens) {
     return tokens[tokens.length - 1] == "color";
 }
@@ -47,16 +51,20 @@ BLOCKS = [
         "rule": ruleTurnDirection
     },
     {
-        "text": "pen up",
+        "text": "pen",
         "rule": ruleFirstToken
     },
     {
-        "text": "pen down",
-        "rule": ruleFirstToken
+        "text": "up",
+        "rule": rulePenCommand
     },
     {
-        "text": "pen color",
-        "rule": ruleFirstToken
+        "text": "down",
+        "rule": rulePenCommand
+    },
+    {
+        "text": "color",
+        "rule": rulePenCommand
     },
     {
         "text": "red",
@@ -97,5 +105,9 @@ BLOCKS = [
     {
         "text": "brown",
         "rule": ruleColor
+    },
+    {
+        "text": "repeat ___ times:end",
+        "rule": ruleFirstToken
     }
 ];
