@@ -351,3 +351,6 @@ function getSelectionEnd(elem) {
 box.onkeyup = function(){cursorChanged(false);};
 box.onclick = function(){cursorChanged(false);};
 document.getElementById("runbutton").onclick = run;
+
+box.focus();
+cursorChanged(true);
