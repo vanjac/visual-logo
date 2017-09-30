@@ -46,6 +46,20 @@ function addBlocksAtCursor(pos) {
     var lineBeforeCursor = box.value.substring(
         lineStart(box.value, pos), pos);
     tokensBeforeCursor = tokenize(lineBeforeCursor);
+    // return if inside a string...
+    console.log(tokensBeforeCursor);
+    if(tokensBeforeCursor.length > 0) {
+        var lastToken = tokensBeforeCursor[tokensBeforeCursor.length-1];
+        if(lastToken.charAt(0) == '"') {
+            if(lastToken.length == 1) {
+                setBlocks([]);
+                return;
+            } else if(lastToken.charAt(lastToken.length - 1) != '"') {
+                setBlocks([]);
+                return;
+            }
+        }
+    }
     var matchedBlocks = [];
     for(var i = 0; i < BLOCKS.length; i++) {
         if(BLOCKS[i].rule(tokensBeforeCursor))
@@ -108,8 +122,8 @@ function tokenize(line) {
         }
     }
     if(inString) {
-        // add missing end quote
-        tokens.push(currentToken + '"');
+        // missing end quote
+        tokens.push(currentToken);
     }
     return tokens;
 }
