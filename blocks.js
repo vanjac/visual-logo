@@ -111,6 +111,11 @@ BLOCKS = [
         "rule": ruleColor
     },
     {
+        "text": "size ___",
+        "rule": rulePenCommand,
+        "cursorOffset": -3
+    },
+    {
         "text": "repeat ___ times:end repeat",
         "rule": ruleFirstToken,
         "cursorOffset": -22

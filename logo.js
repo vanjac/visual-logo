@@ -1,4 +1,4 @@
-VOCAB = "move forward steps backward turn left degrees right pen up down color red orange yellow green blue purple white black gray brown repeat times end";
+VOCAB = "move forward steps backward turn left degrees right pen up down color red orange yellow green blue purple white black gray brown size repeat times end";
 VOCAB = VOCAB.split(" ");
 
 WIDTH = 512;
@@ -36,7 +36,8 @@ function runCommand(tokens) {
             return GENERIC_COMMAND_ERROR;
         return penCommand(tokens.slice(1));
     }
-    if(tokens[0] == "up" || tokens[0] == "down" || tokens[0] == "color") {
+    if(tokens[0] == "up" || tokens[0] == "down" || tokens[0] == "color" ||
+       tokens[0] == "size") {
         return penCommand(tokens.slice(0));
     }
     if(tokens[0] == "repeat") {
@@ -85,11 +86,18 @@ function penCommand(tokens) {
         turtle.pen = true;
     else if(tokens[0] == "color") {
         if(tokens.length == 1)
-            return GENERIC_COMMAND_ERROR;
+            return "What color?";
         var color = tokens[1];
         if(color.charAt(0) == '"')
             color = color.substring(1, color.length-1);
         turtle.color = color;
+    } else if(tokens[0] == "size") {
+        if(tokens.length == 1)
+            return "What size? (please give a number)";
+        var size = tokens[1];
+        if(isNaN(size))
+            return size + " is not a number";
+        turtle.size = Number(size);
     } else
         return GENERIC_COMMAND_ERROR;
 }
@@ -116,6 +124,7 @@ function turtleMove(steps) {
     turtle.y += Math.sin(turtle.heading) * steps;
     if(turtle.pen) {
         ctx.strokeStyle = turtle.color;
+        ctx.lineWidth = turtle.size;
         ctx.beginPath();
         ctx.moveTo(oldX, oldY);
         ctx.lineTo(turtle.x, turtle.y);
@@ -135,7 +144,8 @@ function clear() {
         "y": HEIGHT/2,
         "heading": -Math.PI/2, // up
         "pen": true,
-        "color": "black"
+        "color": "black",
+        "size": 1
     }
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
     updateSprite();
