@@ -221,5 +221,5 @@ function getSelectionEnd(elem) {
     return 0;
 }
 
-box.onkeyup = cursorChanged;
-box.onclick = cursorChanged;
+box.onkeyup = function(){cursorChanged(false);};
+box.onclick = function(){cursorChanged(false);};
