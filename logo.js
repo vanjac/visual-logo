@@ -125,6 +125,7 @@ function turtleMove(steps) {
     if(turtle.pen) {
         ctx.strokeStyle = turtle.color;
         ctx.lineWidth = turtle.size;
+        ctx.lineCap = "round";
         ctx.beginPath();
         ctx.moveTo(oldX, oldY);
         ctx.lineTo(turtle.x, turtle.y);
