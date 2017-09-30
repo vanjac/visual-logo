@@ -131,7 +131,7 @@ function clear() {
         "x": WIDTH/2,
         "y": HEIGHT/2,
         "heading": -Math.PI/2, // up
-        "pen": false,
+        "pen": true,
         "color": "black"
     }
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
