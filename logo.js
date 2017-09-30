@@ -18,9 +18,12 @@ var turtle = {
 }
 
 function runCommand(tokens) {
+    if(tokens[0] == "end") {
+        return "Unmatched end";
+    }
     if(tokens[0] == "move") {
         if(tokens.length == 1)
-            return GENERIC_COMMAND_ERROR;
+            return "Which direction to move, forward or backward?";
         return moveCommand(tokens.slice(1));
     }
     if(tokens[0] == "forward" || tokens[0] == "backward") {
@@ -28,7 +31,7 @@ function runCommand(tokens) {
     }
     if(tokens[0] == "turn") {
         if(tokens.length == 1)
-            return GENERIC_COMMAND_ERROR;
+            return "Which direction to turn, left or right?";
         return turnCommand(tokens.slice(1));
     }
     if(tokens[0] == "left" || tokens[0] == "right") {
@@ -42,6 +45,14 @@ function runCommand(tokens) {
     if(tokens[0] == "up" || tokens[0] == "down" || tokens[0] == "color") {
         return penCommand(tokens.slice(0));
     }
+    if(tokens[0] == "repeat") {
+        if(tokens.length == 1)
+            return "How many times to repeat?";
+        var times = tokens[1];
+        if(isNaN(times))
+            return times + " is not a number";
+        return Number(times);
+    }
     return GENERIC_COMMAND_ERROR;
 }
 
@@ -49,7 +60,7 @@ function moveCommand(tokens) {
     if(tokens[0] != "forward" && tokens[0] != "backward")
         return GENERIC_COMMAND_ERROR;
     if(tokens.length == 1)
-        return GENERIC_COMMAND_ERROR;
+        return "How far to move?";
     var steps = tokens[1];
     if(isNaN(steps))
         return steps + " is not a number";
@@ -63,7 +74,7 @@ function turnCommand(tokens) {
     if(tokens[0] != "left" && tokens[0] != "right")
         return GENERIC_COMMAND_ERROR;
     if(tokens.length == 1)
-        return GENERIC_COMMAND_ERROR;
+        return "How much to turn?";
     var deg = tokens[1];
     if(isNaN(deg))
         return deg + " is not a number";
