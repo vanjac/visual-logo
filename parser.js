@@ -108,16 +108,18 @@ function setBlocks(blocks) {
     var html = "";
     for(var i = 0; i < blocks.length; i++) {
         var name = blocks[i];
+        var displayName = name.replace(":", ": ... ");
         html += "<a href=\"javascript:void(0)\" onclick='blockSelect(\"" +
             name +
             "\");'><span class=\"block\">" +
-            name +
+            displayName +
             "</span></a>";
     }
     blocksDiv.innerHTML = html;
 }
 
 function blockSelect(text) {
+    text = text.replace(":", ":\n\n");
     var selStart = getSelectionStart(box);
     var selEnd = getSelectionEnd(box);
     if(selStart != 0 && WHITESPACE.indexOf(box.value.charAt(selStart - 1)) == -1)
