@@ -125,6 +125,12 @@ function tokenize(line) {
                     tokens.push(currentToken);
                     currentToken = "";
                 }
+            } else if(c == ':') {
+                if(currentToken != "") {
+                    tokens.push(currentToken);
+                    currentToken = "";
+                }
+                tokens.push(':');
             } else {
                 currentToken += c;
             }
@@ -202,6 +208,8 @@ function checkErrors(script) {
         for(var tokenNum = 0; tokenNum < lTokens.length; tokenNum++) {
             var t = lTokens[tokenNum];
             if(!isNaN(t))
+                continue;
+            if(t == ":")
                 continue;
             if(t.charAt(0) == '"') {
                 if(t.length == 1 || t.charAt(t.length - 1) != '"') {
