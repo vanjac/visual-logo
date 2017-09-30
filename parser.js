@@ -197,13 +197,42 @@ function runLines(lines, start, end) {
         if(result) {
             if(!isNaN(result)) {
                 // repeat block
-                console.log("Repeat " + result);
+                var repeatEnd = findEnd(lines, lineNum, end);
+                if(repeatEnd == null) {
+                    alert(errorMessage(lineNum, "Missing end"));
+                    break;
+                }
+                for(var i = 0; i < result; i++)
+                    runLines(lines, lineNum + 1, repeatEnd);
+                lineNum = repeatEnd;
             } else {
                 // error
                 alert(errorMessage(lineNum, result));
                 break;
             }
         }
+    }
+}
+
+function findEnd(lines, start, end) {
+    var lineNum = start + 1;
+    var nest = 0;
+    while(true) {
+        if(lineNum == end) {
+            return null;
+        }
+        var tokens = tokenize(lines[lineNum]);
+        if(tokens.length > 0) {
+            if(tokens[tokens.length - 1] == ":")
+                nest++;
+            else if(tokens[0] == "end") {
+                if(nest == 0)
+                    return lineNum;
+                else
+                    nest--;
+            }
+        }
+        lineNum++;
     }
 }
 
