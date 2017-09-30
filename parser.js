@@ -36,14 +36,11 @@ function addBlocksAtCursor(pos) {
     var lineBeforeCursor = box.value.substring(
         lineStart(box.value, pos), pos);
     tokensBeforeCursor = tokenize(lineBeforeCursor);
-    console.log(tokensBeforeCursor);
     var matchedBlocks = [];
     for(var i = 0; i < BLOCKS.length; i++) {
-        console.log(BLOCKS[i].text);
         if(BLOCKS[i].rule(tokensBeforeCursor))
             matchedBlocks.push(BLOCKS[i].text);
     }
-    console.log(matchedBlocks);
     setBlocks(matchedBlocks);
 }
 
@@ -154,7 +151,6 @@ function setSelection(elem, startPos, endPos) {
 	endPos = startPos;
 	startPos = temp;
     }
-    console.log("Select from " + startPos + " to " + endPos);
     if(elem != null) {
         if(elem.createTextRange) { // Legacy IE
             var range = elem.createTextRange();
