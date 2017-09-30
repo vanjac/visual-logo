@@ -5,6 +5,13 @@ var box = document.getElementById("scriptbox");
 var currentBlankSelectionStart = null;
 
 function cursorChanged(justAddedBlock) {
+    if(getSelectionStart(box) != getSelectionEnd(box)) {
+        // something is selected
+        currentBlankSelectionStart = null;
+        setBlocks([]);
+        return;
+    }
+
     var pos = getCaretPosition(box);
 
     var blocksAdded = false;
