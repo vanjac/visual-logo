@@ -188,6 +188,7 @@ function run() {
     runLines(lines, 0, lines.length);
 }
 
+// true for error
 function runLines(lines, start, end) {
     for(var lineNum = start; lineNum < end; lineNum++) {
         var tokens = tokenize(lines[lineNum]);
@@ -200,18 +201,20 @@ function runLines(lines, start, end) {
                 var repeatEnd = findEnd(lines, lineNum, end);
                 if(repeatEnd == null) {
                     alert(errorMessage(lineNum, "Missing end"));
-                    break;
+                    return true;
                 }
                 for(var i = 0; i < result; i++)
-                    runLines(lines, lineNum + 1, repeatEnd);
+                    if(runLines(lines, lineNum + 1, repeatEnd))
+                        return true;
                 lineNum = repeatEnd;
             } else {
                 // error
                 alert(errorMessage(lineNum, result));
-                break;
+                return true;
             }
         }
     }
+    return false;
 }
 
 function findEnd(lines, start, end) {
