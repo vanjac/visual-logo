@@ -15,7 +15,12 @@
                 <div id="blocks"></div>
             </td>
             <td>
-                <canvas width="512" height="512"></canvas>
+                <canvas width="512" height="512" id="drawcanvas"
+                    style="position: static; left: 0; top: 0; z-index: 0;">
+                    </canvas>
+                <canvas width="512" height="512" id="spritecanvas"
+                    style="position: relative; left: 0; top: -512px; z-index: 1;">
+                    </canvas>
             </td>
         </tr></table>
 
