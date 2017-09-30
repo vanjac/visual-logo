@@ -38,7 +38,7 @@ function cursorChanged(justAddedBlock) {
         currentBlankSelectionStart = null;
         setBlocks([]);
     }
-    var onNewLine = pos == box.value.length || box.value.charAt(pos) == '\n'
+    var onNewLine = pos == box.value.length || box.value.charAt(pos) == '\n';
     if(!blocksAdded && justAddedBlock && onNewLine) {
         // start a new line
         box.value = box.value.substring(0, pos) + '\n'
@@ -72,7 +72,7 @@ function addBlocksAtCursor(pos) {
     var matchedBlocks = [];
     for(var i = 0; i < BLOCKS.length; i++) {
         if(BLOCKS[i].rule(tokensBeforeCursor))
-            matchedBlocks.push(BLOCKS[i].text);
+            matchedBlocks.push(BLOCKS[i]);
     }
     setBlocks(matchedBlocks);
     return matchedBlocks.length != 0;
@@ -147,28 +147,34 @@ function setBlocks(blocks) {
     var blocksDiv = document.getElementById("blocks");
     var html = "";
     for(var i = 0; i < blocks.length; i++) {
-        var name = blocks[i];
+        var block = blocks[i];
+        var name = block.text;
         var displayName = name.replace(":", ": ... ");
+        var cursorOffset = block.cursorOffset;
+        if(!cursorOffset)
+            cursorOffset = 0;
         html += "<a href=\"javascript:void(0)\" onclick='blockSelect(\"" +
-            name +
-            "\");'><span class=\"block\">" +
+            name + "\"," + cursorOffset +
+            ");'><span class=\"block\">" +
             displayName +
             "</span></a>";
     }
     blocksDiv.innerHTML = html;
 }
 
-function blockSelect(text) {
+function blockSelect(text, cursorOffset) {
     text = text.replace(":", ":\n\n");
     var selStart = getSelectionStart(box);
     var selEnd = getSelectionEnd(box);
     if(selStart != 0 && WHITESPACE.indexOf(box.value.charAt(selStart - 1)) == -1)
         text = " " + text;
-    if(WHITESPACE.indexOf(box.value.charAt(selEnd)) == -1)
+    if(WHITESPACE.indexOf(box.value.charAt(selEnd)) == -1) {
         text += " ";
+        cursorOffset--;
+    }
     box.value = box.value.substring(0, selStart) + text
         + box.value.substring(selEnd);
-    setCaretPosition(box, selStart + text.length);
+    setCaretPosition(box, selStart + text.length + cursorOffset);
     box.focus();
     cursorChanged(true);
 }
