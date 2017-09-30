@@ -32,11 +32,13 @@ BLOCKS = [
     },
     {
         "text": "forward ___ steps",
-        "rule": ruleMoveDirection
+        "rule": ruleMoveDirection,
+        "cursorOffset": -9
     },
     {
         "text": "backward ___ steps",
-        "rule": ruleMoveDirection
+        "rule": ruleMoveDirection,
+        "cursorOffset": -9
     },
     {
         "text": "turn",
@@ -44,11 +46,13 @@ BLOCKS = [
     },
     {
         "text": "left ___ degrees",
-        "rule": ruleTurnDirection
+        "rule": ruleTurnDirection,
+        "cursorOffset": -11
     },
     {
         "text": "right ___ degrees",
-        "rule": ruleTurnDirection
+        "rule": ruleTurnDirection,
+        "cursorOffset": -11
     },
     {
         "text": "pen",
@@ -108,6 +112,7 @@ BLOCKS = [
     },
     {
         "text": "repeat ___ times:end repeat",
-        "rule": ruleFirstToken
+        "rule": ruleFirstToken,
+        "cursorOffset": -22
     }
 ];
