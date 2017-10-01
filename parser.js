@@ -197,6 +197,19 @@ function blockSelect(text, cursorOffset) {
     cursorChanged(true);
 }
 
+function highlightLine(line) {
+    box.focus();
+    var lineStartIndex;
+    if(line == 0)
+        lineStartIndex = 0;
+    else {
+        var lines = box.value.split('\n');
+        lineStartIndex = lines.slice(0, line).join('\n').length + 1;
+    }
+    lineEndIndex = lineEnd(box.value, lineStartIndex);
+    setSelection(box, lineStartIndex, lineEndIndex);
+}
+
 /* RUN SCRIPT */
 
 function speedChange() {
@@ -250,9 +263,12 @@ function startScript() {
     for(var lineNum = 0; lineNum < lines.length; lineNum++)
         scriptLineTokens.push(tokenize(lines[lineNum]));
 
-    errors = checkErrors(scriptLineTokens);
-    if(errors.length != 0) {
-        alert(errors.join('\n'));
+    var checkErrorsResult = checkErrors(scriptLineTokens);
+    var errorLines = checkErrorsResult[0];
+    var errorMessages = checkErrorsResult[1];
+    if(errorMessages.length > 0) {
+        alert(errorMessages.join('\n'));
+        highlightLine(errorLines[0]);
         return false;
     }
 
@@ -328,10 +344,7 @@ function runStep(lines, start, end) {
             // repeat block
             var repeatEnd = findEnd(scriptLineTokens, lineNum, end);
             if(repeatEnd == null) {
-                alert(errorMessage(lineNum, "Missing end"));
-                scriptStarted = false;
-                scriptRunning = false;
-                runStateChanged();
+                runStepError(lineNum, "Missing end");
                 return;
             }
             range[2] = repeatEnd;
@@ -339,15 +352,20 @@ function runStep(lines, start, end) {
                 scriptRanges.push([lineNum + 1, repeatEnd, lineNum + 1]);
         } else {
             // error
-            alert(errorMessage(lineNum, result));
-            scriptStarted = false;
-            scriptRunning = false;
-            runStateChanged();
+            runStepError(lineNum, result);
             return;
         }
     }
     range[2]++;
     scheduleNextStep();
+}
+
+function runStepError(line, message) {
+    alert(errorMessage(line, message));
+    scriptStarted = false;
+    scriptRunning = false;
+    runStateChanged();
+    highlightLine(line);
 }
 
 function scheduleNextStep() {
@@ -391,7 +409,9 @@ function findEnd(lineTokens, start, end) {
     }
 }
 
+// return lineArray, messageArray
 function checkErrors(lineTokens) {
+    var lines = [];
     var errors = [];
 
     for(var lineNum = 0; lineNum < lineTokens.length; lineNum++) {
@@ -406,21 +426,24 @@ function checkErrors(lineTokens) {
                 continue;
             if(t.charAt(0) == '"') {
                 if(t.length == 1 || t.charAt(t.length - 1) != '"') {
+                    lines.push(lineNum);
                     errors.push(errorMessage(lineNum, "Unmatched quote"));
                 }
                 continue;
             }
             if(t.charAt(0) == '_') {
+                lines.push(lineNum);
                 errors.push(errorMessage(lineNum, "Unfilled blank"));
                 continue;
             }
             if(VOCAB.indexOf(t) == -1) {
+                lines.push(lineNum);
                 errors.push(errorMessage(lineNum, "Unknown word " + t));
             }
         }
     }
 
-    return errors;
+    return [lines, errors];
 }
 
 /* UTILS */
