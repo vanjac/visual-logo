@@ -203,11 +203,42 @@ function speedChange() {
     stepDelayTime = Number(document.getElementById("speedselect").value);
 }
 
+function runStateChanged() {
+    var runStateP = document.getElementById("runstate");
+    var runButton = document.getElementById("runbutton");
+    var resetButton = document.getElementById("resetbutton");
+    var pauseButton = document.getElementById("pausebutton");
+    var stopButton = document.getElementById("stopbutton");
+    var stepButton = document.getElementById("stepbutton");
+    if(scriptStarted) {
+        resetButton.style.display = "none";
+        stopButton.style.display = "inline";
+        if(scriptRunning) {
+            runStateP.innerHTML = "Running...";
+            runButton.style.display = "none";
+            pauseButton.style.display = "inline";
+            stepButton.style.display = "none";
+        } else {
+            runStateP.innerHTML = "Paused";
+            runButton.style.display = "inline";
+            pauseButton.style.display = "none";
+            stepButton.style.display = "inline";
+        }
+    } else {
+        runStateP.innerHTML = "Stopped";
+        runButton.style.display = "inline";
+        resetButton.style.display = "inline";
+        pauseButton.style.display = "none";
+        stopButton.style.display = "none";
+        stepButton.style.display = "inline";
+    }
+}
+
 function errorMessage(line, error) {
     return "Error on line " + (line + 1) + ": " + error;
 }
 
-function run() {
+function startScript() {
     var script = box.value;
 
     // tokenize
@@ -219,15 +250,47 @@ function run() {
     errors = checkErrors(scriptLineTokens);
     if(errors.length != 0) {
         alert(errors.join('\n'));
-        return;
+        return false;
     }
 
-    // start script
-    scriptStarted = true;
-    scriptRunning = true;
     scriptLineNum = 0;
     scriptRanges = [ [0, lines.length, 0] ];
+    scriptStarted = true;
+    return true;
+}
 
+function run() {
+    if(!scriptStarted)
+        if(!startScript())
+            return;
+    scriptRunning = true;
+    runStateChanged();
+    runStep();
+}
+
+function stop() {
+    scriptStarted = false;
+    scriptRunning = false;
+    scriptRanges = [];
+    runStateChanged();
+}
+
+function pause() {
+    scriptRunning = false;
+    runStateChanged();
+}
+
+function resume() {
+    scriptRunning = true;
+    runStateChanged();
+    runStep();
+}
+
+function step() {
+    if(!scriptStarted)
+        if(!startScript())
+            return;
+    runStateChanged();
     runStep();
 }
 
@@ -236,6 +299,7 @@ function runStep(lines, start, end) {
     if(scriptRanges.length == 0) {
         scriptStarted = false;
         scriptRunning = false;
+        runStateChanged();
         return;
     }
     range = scriptRanges[scriptRanges.length - 1];
@@ -263,6 +327,7 @@ function runStep(lines, start, end) {
                 alert(errorMessage(lineNum, "Missing end"));
                 scriptStarted = false;
                 scriptRunning = false;
+                runStateChanged();
                 return;
             }
             range[2] = repeatEnd;
@@ -273,6 +338,7 @@ function runStep(lines, start, end) {
             alert(errorMessage(lineNum, result));
             scriptStarted = false;
             scriptRunning = false;
+            runStateChanged();
             return;
         }
     }
@@ -281,6 +347,8 @@ function runStep(lines, start, end) {
 }
 
 function scheduleNextStep() {
+    if(!scriptRunning)
+        return;
     if(stepDelayTime < 0)
         runStep();
     else
@@ -424,8 +492,12 @@ function getSelectionEnd(elem) {
 box.onkeyup = function(){cursorChanged(false);};
 box.onclick = function(){cursorChanged(false);};
 document.getElementById("runbutton").onclick = run;
+document.getElementById("pausebutton").onclick = pause;
+document.getElementById("stopbutton").onclick = stop;
+document.getElementById("stepbutton").onclick = step;
 document.getElementById("speedselect").onchange = speedChange;
 
 box.focus();
 cursorChanged(true);
 speedChange();
+runStateChanged();
