@@ -312,7 +312,7 @@ function runStep(lines, start, end) {
     var lineNum = range[2];
     if(lineNum == end) {
         scriptRanges.pop();
-        scheduleNextStep();
+        runStep(); // immediately, without scheduling
         return;
     }
 
