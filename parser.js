@@ -379,7 +379,8 @@ function scheduleNextStep() {
 
 function updateLineIndicator() {
     box.value = box.value.replace(" <--", "");
-    if(scriptStarted && scriptRanges.length > 0 && stepDelayTime > 50) {
+    if(scriptStarted && scriptRanges.length > 0
+            && (stepDelayTime > 50 || !scriptRunning)) {
         lines = box.value.split('\n');
         lineNum = scriptRanges[scriptRanges.length - 1][2];
         lines[lineNum] += " <--";
