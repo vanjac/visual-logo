@@ -383,6 +383,8 @@ function updateLineIndicator() {
             && (stepDelayTime > 50 || !scriptRunning)) {
         lines = box.value.split('\n');
         lineNum = scriptRanges[scriptRanges.length - 1][2];
+        if(lineNum >= lines.length)
+            return;
         lines[lineNum] += " <--";
         box.value = lines.join("\n");
     }
