@@ -2,7 +2,16 @@ var WHITESPACE = ['\n', ' ', '\t'];
 
 var box = document.getElementById("scriptbox");
 
+/* EDITOR STATE */
 var currentBlankSelectionStart = null;
+
+/* SCRIPT STATE */
+var scriptStarted = false;
+var scriptRunning = false;
+var scriptLineTokens = []; // array of arrays of tokens
+var scriptRanges = []; // a stack of (start, end, current line) arrays
+
+/* EDITOR */
 
 function cursorChanged(justAddedBlock) {
     if(getSelectionStart(box) != getSelectionEnd(box)) {
@@ -186,58 +195,98 @@ function blockSelect(text, cursorOffset) {
     cursorChanged(true);
 }
 
+/* RUN SCRIPT */
+
 function errorMessage(line, error) {
     return "Error on line " + (line + 1) + ": " + error;
 }
 
 function run() {
     var script = box.value;
-    errors = checkErrors(script);
+
+    // tokenize
+    var lines = script.split("\n");
+    scriptLineTokens = [];
+    for(var lineNum = 0; lineNum < lines.length; lineNum++)
+        scriptLineTokens.push(tokenize(lines[lineNum]));
+
+    errors = checkErrors(scriptLineTokens);
     if(errors.length != 0) {
         alert(errors.join('\n'));
         return;
     }
-    var lines = script.split("\n");
-    runLines(lines, 0, lines.length);
+
+    // start script
+    scriptStarted = true;
+    scriptRunning = true;
+    scriptLineNum = 0;
+    scriptRanges = [ [0, lines.length, 0] ];
+
+    runStep();
 }
 
 // true for error
-function runLines(lines, start, end) {
-    for(var lineNum = start; lineNum < end; lineNum++) {
-        var tokens = tokenize(lines[lineNum]);
-        if(tokens.length == 0)
-            continue;
-        var result = runCommand(tokens);
-        if(result) {
-            if(!isNaN(result)) {
-                // repeat block
-                var repeatEnd = findEnd(lines, lineNum, end);
-                if(repeatEnd == null) {
-                    alert(errorMessage(lineNum, "Missing end"));
-                    return true;
-                }
-                for(var i = 0; i < result; i++)
-                    if(runLines(lines, lineNum + 1, repeatEnd))
-                        return true;
-                lineNum = repeatEnd;
-            } else {
-                // error
-                alert(errorMessage(lineNum, result));
-                return true;
+function runStep(lines, start, end) {
+    if(scriptRanges.length == 0) {
+        scriptStarted = false;
+        scriptRunning = false;
+        return;
+    }
+    range = scriptRanges[scriptRanges.length - 1];
+    var start = range[0];
+    var end = range[1];
+    var lineNum = range[2];
+    if(lineNum == end) {
+        scriptRanges.pop();
+        scheduleNextStep();
+        return;
+    }
+
+    var tokens = scriptLineTokens[lineNum];
+    if(tokens.length == 0) {
+        range[2]++;
+        scheduleNextStep();
+        return;
+    }
+    var result = runCommand(tokens);
+    if(result) {
+        if(!isNaN(result)) {
+            // repeat block
+            var repeatEnd = findEnd(scriptLineTokens, lineNum, end);
+            if(repeatEnd == null) {
+                alert(errorMessage(lineNum, "Missing end"));
+                scriptStarted = false;
+                scriptRunning = false;
+                return;
             }
+            range[2] = repeatEnd;
+            for(var i = 0; i < result; i++)
+                scriptRanges.push([lineNum + 1, repeatEnd, lineNum + 1]);
+        } else {
+            // error
+            alert(errorMessage(lineNum, result));
+            scriptStarted = false;
+            scriptRunning = false;
+            return;
         }
     }
-    return false;
+    range[2]++;
+    scheduleNextStep();
 }
 
-function findEnd(lines, start, end) {
+function scheduleNextStep() {
+    //setTimeout(runStep, 0);
+    runStep();
+}
+
+function findEnd(lineTokens, start, end) {
     var lineNum = start + 1;
     var nest = 0;
     while(true) {
         if(lineNum == end) {
             return null;
         }
-        var tokens = tokenize(lines[lineNum]);
+        var tokens = lineTokens[lineNum];
         if(tokens.length > 0) {
             if(tokens[tokens.length - 1] == ":")
                 nest++;
@@ -252,13 +301,11 @@ function findEnd(lines, start, end) {
     }
 }
 
-function checkErrors(script) {
+function checkErrors(lineTokens) {
     var errors = [];
 
-    var lines = script.split("\n");
-    for(var lineNum = 0; lineNum < lines.length; lineNum++) {
-        var l = lines[lineNum];
-        var lTokens = tokenize(l);
+    for(var lineNum = 0; lineNum < lineTokens.length; lineNum++) {
+        var lTokens = lineTokens[lineNum];
         for(var tokenNum = 0; tokenNum < lTokens.length; tokenNum++) {
             var t = lTokens[tokenNum];
             if(!isNaN(t))
@@ -286,6 +333,7 @@ function checkErrors(script) {
     return errors;
 }
 
+/* UTILS */
 
 // from: http://stackoverflow.com/questions/512528/set-cursor-position-in-html-textbox
 function setCaretPosition(elem, caretPos) {
@@ -362,6 +410,8 @@ function getSelectionEnd(elem) {
 
     return 0;
 }
+
+/* INITIALIZE */
 
 box.onkeyup = function(){cursorChanged(false);};
 box.onclick = function(){cursorChanged(false);};
