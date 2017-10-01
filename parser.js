@@ -234,6 +234,7 @@ function runStateChanged() {
         stopButton.style.display = "none";
         stepButton.style.display = "inline";
     }
+    updateLineIndicator();
 }
 
 function errorMessage(line, error) {
@@ -304,6 +305,7 @@ function runStep(lines, start, end) {
         runStateChanged();
         return;
     }
+    updateLineIndicator();
     range = scriptRanges[scriptRanges.length - 1];
     var start = range[0];
     var end = range[1];
@@ -355,6 +357,16 @@ function scheduleNextStep() {
         runStep();
     else
         setTimeout(runStep, stepDelayTime);
+}
+
+function updateLineIndicator() {
+    box.value = box.value.replace(" <--", "");
+    if(scriptStarted && scriptRanges.length > 0 && stepDelayTime > 50) {
+        lines = box.value.split('\n');
+        lineNum = scriptRanges[scriptRanges.length - 1][2];
+        lines[lineNum] += " <--";
+        box.value = lines.join("\n");
+    }
 }
 
 function findEnd(lineTokens, start, end) {
