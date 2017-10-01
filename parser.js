@@ -11,6 +11,8 @@ var scriptRunning = false;
 var scriptLineTokens = []; // array of arrays of tokens
 var scriptRanges = []; // a stack of (start, end, current line) arrays
 
+var stepDelayTime;
+
 /* EDITOR */
 
 function cursorChanged(justAddedBlock) {
@@ -197,6 +199,10 @@ function blockSelect(text, cursorOffset) {
 
 /* RUN SCRIPT */
 
+function speedChange() {
+    stepDelayTime = Number(document.getElementById("speedselect").value);
+}
+
 function errorMessage(line, error) {
     return "Error on line " + (line + 1) + ": " + error;
 }
@@ -275,8 +281,10 @@ function runStep(lines, start, end) {
 }
 
 function scheduleNextStep() {
-    //setTimeout(runStep, 0);
-    runStep();
+    if(stepDelayTime < 0)
+        runStep();
+    else
+        setTimeout(runStep, stepDelayTime);
 }
 
 function findEnd(lineTokens, start, end) {
@@ -416,6 +424,8 @@ function getSelectionEnd(elem) {
 box.onkeyup = function(){cursorChanged(false);};
 box.onclick = function(){cursorChanged(false);};
 document.getElementById("runbutton").onclick = run;
+document.getElementById("speedselect").onchange = speedChange;
 
 box.focus();
 cursorChanged(true);
+speedChange();
