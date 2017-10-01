@@ -338,23 +338,21 @@ function runStep(lines, start, end) {
         scheduleNextStep();
         return;
     }
-    var result = runCommand(tokens);
-    if(result) {
-        if(!isNaN(result)) {
-            // repeat block
-            var repeatEnd = findEnd(scriptLineTokens, lineNum, end);
-            if(repeatEnd == null) {
-                runStepError(lineNum, "Missing end");
-                return;
-            }
-            range[2] = repeatEnd;
-            for(var i = 0; i < result; i++)
-                scriptRanges.push([lineNum + 1, repeatEnd, lineNum + 1]);
-        } else {
-            // error
-            runStepError(lineNum, result);
+    var result;
+    if(tokens[tokens.length - 1] == ":") {
+        // flow structure
+        var endLine = findEnd(scriptLineTokens, lineNum, end);
+        if(endLine == null) {
+            runStepError(lineNum, "Missing end");
             return;
         }
+        result = runCommand(tokens, lineNum, endLine, scriptRanges);
+    } else {
+        result = runCommand(tokens);
+    }
+    if(result) {
+        runStepError(lineNum, result);
+        return;
     }
     range[2]++;
     scheduleNextStep();

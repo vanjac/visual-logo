@@ -11,7 +11,8 @@ var spriteCtx = document.getElementById("spritecanvas").getContext("2d");
 
 var turtle;
 
-function runCommand(tokens) {
+// last 3 arguments are only passed if this is a flow structure
+function runCommand(tokens, currentLine, endLine, scriptRanges) {
     if(tokens[0] == "end") {
         return "Unmatched end";
     }
@@ -47,10 +48,16 @@ function runCommand(tokens) {
     if(tokens[0] == "repeat") {
         if(tokens.length == 1)
             return "How many times to repeat?";
+        if(tokens[tokens.length - 1] != ":")
+            return "Missing :";
         var times = tokens[1];
         if(isNaN(times))
             return times + " is not a number";
-        return Number(times);
+        times = Number(times);
+        scriptRanges[scriptRanges.length-1][2] = endLine;
+        for(var i = 0; i < times; i++)
+            scriptRanges.push([currentLine + 1, endLine, currentLine + 1]);
+        return;
     }
     return GENERIC_COMMAND_ERROR;
 }
