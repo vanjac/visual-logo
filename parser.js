@@ -335,7 +335,7 @@ function runStep(lines, start, end) {
     var tokens = scriptLineTokens[lineNum];
     if(tokens.length == 0) {
         range[2]++;
-        scheduleNextStep();
+        runStep(); // immediately, without scheduling
         return;
     }
     var result;
