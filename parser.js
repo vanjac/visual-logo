@@ -211,6 +211,7 @@ function runStateChanged() {
     var stopButton = document.getElementById("stopbutton");
     var stepButton = document.getElementById("stepbutton");
     if(scriptStarted) {
+        box.disabled = true;
         resetButton.style.display = "none";
         stopButton.style.display = "inline";
         if(scriptRunning) {
@@ -225,6 +226,7 @@ function runStateChanged() {
             stepButton.style.display = "inline";
         }
     } else {
+        box.disabled = false;
         runStateP.innerHTML = "Stopped";
         runButton.style.display = "inline";
         resetButton.style.display = "inline";
