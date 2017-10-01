@@ -111,15 +111,19 @@ function penCommand(tokens) {
         turtle.size = Number(size);
     } else
         return GENERIC_COMMAND_ERROR;
+    updateSprite();
 }
 
 function updateSprite() {
     spriteCtx.clearRect(0, 0, WIDTH, HEIGHT);
-    spriteCtx.strokeStyle = "blue";
-    spriteCtx.fillStyle = "blue";
+    spriteCtx.strokeStyle = turtle.color;
+    spriteCtx.fillStyle = turtle.color;
     spriteCtx.beginPath();
     spriteCtx.arc(turtle.x, turtle.y, 6, 2*Math.PI, false);
-    spriteCtx.fill();
+    if(turtle.pen)
+        spriteCtx.fill();
+    else
+        spriteCtx.stroke();
 
     spriteCtx.beginPath();
     spriteCtx.moveTo(turtle.x, turtle.y);
