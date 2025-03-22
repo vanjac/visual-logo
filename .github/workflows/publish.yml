@@ -1,0 +1,17 @@
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+concurrency:
+  group: "publish"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: vanjac/chroma-zone-publish@main
+        with:
+          src-dir: '.'
+          token: ${{ secrets.ACTIONS_GITHUB_TOKEN }}
